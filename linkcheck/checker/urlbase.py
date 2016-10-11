@@ -377,6 +377,8 @@ class UrlBase (object):
         urlparts = list(urlparse.urlsplit(self.url))
         if urlparts[2]:
             urlparts[2] = urlutil.collapse_segments(urlparts[2])
+            from linkcheck.url import url_fix_wayback_query
+            urlparts[2] = url_fix_wayback_query(urlparts[2]) # restore second / in http[s]:// in wayback path
         self.url = urlutil.urlunsplit(urlparts)
         # split into (modifiable) list
         self.urlparts = strformat.url_unicode_split(self.url)
