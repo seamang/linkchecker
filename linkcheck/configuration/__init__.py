@@ -156,6 +156,7 @@ class Configuration (dict):
     """
 
     def __init__ (self):
+        # type: () -> object
         """
         Initialize the default options.
         """
@@ -179,6 +180,7 @@ class Configuration (dict):
         self["aborttimeout"] = 300
         self["recursionlevel"] = -1
         self["useragent"] = UserAgent
+        self["allowwaybackurls"] = False
         ## authentication
         self["authentication"] = []
         self["loginurl"] = None
