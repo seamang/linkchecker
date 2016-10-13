@@ -168,7 +168,7 @@
 # Allowed URL schemes as a comma-separated list.
 #allowedschemes=http,https
 # Allow wayback machine URLs containing http[s]:// in query part.
-allowwaybackurls=1
+#allowwaybackurls=0
 ##################### filtering options ##########################
 [filtering]
 #ignore=
