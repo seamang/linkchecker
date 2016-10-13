@@ -292,7 +292,7 @@ def urlunsplit (urlparts):
     return res
 
 
-def url_norm (url, encoding=None):
+def url_norm (url, allow_wayback_urls, encoding=None):
     """Normalize the given URL which must be quoted. Supports unicode
     hostnames (IDNA encoding) according to RFC 3490.
 
@@ -336,9 +336,7 @@ def url_norm (url, encoding=None):
     urlparts[0] = url_quote_part(urlparts[0], encoding=encoding) # scheme
     urlparts[1] = url_quote_part(urlparts[1], safechars='@:', encoding=encoding) # host
     urlparts[2] = url_quote_part(urlparts[2], safechars=_nopathquote_chars, encoding=encoding) # path
-    from . import configuration
-    config = configuration.Configuration()
-    if config["allowwaybackurls"]:
+    if allow_wayback_urls:
         urlparts[2] = url_fix_wayback_query(urlparts[2]) # unencode colon in http[s]:// in wayback path
     urlparts[4] = url_quote_part(urlparts[4], encoding=encoding) # anchor
     res = urlunsplit(urlparts)
