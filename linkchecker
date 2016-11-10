@@ -42,6 +42,8 @@ import linkcheck.fileutil
 import linkcheck.logger
 import linkcheck.ansicolor
 from linkcheck.director import console, check_urls, get_aggregate
+from  linkcheck.parser import parse_text
+
 # optional modules
 has_argcomplete = linkcheck.fileutil.has_module("argcomplete")
 has_profile = linkcheck.fileutil.has_module("yappi")
@@ -476,6 +478,7 @@ if options.fileoutput:
                     ns['filename'] = suffix
         if ftype not in linkcheck.logger.LoggerNames:
             print_usage(
+
      _("Unknown logger type %(type)r in %(output)r for option %(option)s") % \
        {"type": ftype, "output": options.fileoutput,
         "option": "'-F, --file-output'"})
@@ -566,8 +569,17 @@ if options.stdin:
     for url in read_stdin_urls():
         aggregate_url(aggregate, url)
 elif options.url:
-    for url in options.url:
-        aggregate_url(aggregate, strformat.stripurl(url))
+    url = strformat.stripurl(options.url[0])
+    # if given a single url ending in .lst treat it as a seed list of urls, one per line
+    if (len(options.url) == 1) and url.endswith(".lst"):
+            get_url_from = linkcheck.checker.get_url_from
+            url = linkcheck.checker.guess_url(url)
+            url_data = get_url_from(url, 0, aggregate, extern=(0, 0))
+            url_data.check_connection()
+            parse_text(url_data)
+    else:
+        for url in options.url:
+            aggregate_url(aggregate, strformat.stripurl(url))
 else:
     log.warn(LOG_CMDLINE, _("no files or URLs given"))
 # set up profiling
