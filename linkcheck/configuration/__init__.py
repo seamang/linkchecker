@@ -81,7 +81,8 @@ def get_modules_info():
     for (mod, name, version_attr) in Modules:
         if not fileutil.has_module(mod):
             continue
-        if hasattr(mod, version_attr):
+        # GS add check for None
+        if (version_attr is not None) and hasattr(mod, version_attr):
             attr = getattr(mod, version_attr)
             version = attr() if callable(attr) else attr
             module_infos.append("%s %s" % (name, version))
@@ -200,6 +201,7 @@ class Configuration (dict):
         self['quiet'] = False
         self["verbose"] = False
         self["warnings"] = True
+        self["noproxy"] = False
         self["fileoutput"] = []
         self['output'] = 'text'
         self["status"] = False
@@ -252,7 +254,9 @@ class Configuration (dict):
                 filtered_cfiles.append(cfile)
         log.debug(LOG_CHECK, "reading configuration from %s", filtered_cfiles)
         confparse.LCConfigParser(self).read(filtered_cfiles)
-
+        if self["noproxy"]:
+            self["proxy"] = {}
+            
     def add_auth (self, user=None, password=None, pattern=None):
         """Add given authentication data."""
         if not user or not pattern:
@@ -332,6 +336,8 @@ class Configuration (dict):
         """Try to read additional proxy settings which urllib does not
         support."""
         if os.name != 'posix':
+            return
+        if self["noproxy"]:
             return
         if "http" not in self["proxy"]:
             http_proxy = get_gconf_http_proxy() or get_kde_http_proxy()
