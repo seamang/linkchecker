@@ -42,6 +42,9 @@ class ProxySupport (object):
             return
         proxyurl = urlparse.urlparse(self.proxy)
         self.proxytype = proxyurl.scheme
+        if self.aggregate.config["noproxy"]:
+            self.proxy=None
+            return
         if self.proxytype not in ('http', 'https'):
             # Note that invalid proxies might raise TypeError in urllib2,
             # so make sure to stop checking at this point, not later.
