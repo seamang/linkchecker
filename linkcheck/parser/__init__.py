@@ -21,7 +21,7 @@ from .. import log, LOG_CHECK, strformat, url as urlutil
 from ..htmlutil import linkparse
 from ..HtmlParser import htmlsax
 from ..bookmarks import firefox
-
+import codecs
 
 def parse_url(url_data):
     """Parse a URL."""
@@ -76,6 +76,10 @@ def parse_text (url_data):
     lines are ignored."""
     lineno = 0
     for line in url_data.get_content().splitlines():
+        # remove initial BOM, if it exists
+        if lineno == 0:
+            if line.startswith(codecs.BOM_UTF8):
+                line = line[3:]
         lineno += 1
         line = line.strip()
         if not line or line.startswith('#'):
