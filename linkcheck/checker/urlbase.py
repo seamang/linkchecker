@@ -30,6 +30,10 @@ except ImportError:
     # Python 3
     from urllib.request import urlopen
 import urllib
+try:
+    from httplib import BadStatusLine
+except ImportError:
+    from http.client import BadStatusLine
 import time
 import errno
 import socket
@@ -102,6 +106,8 @@ class UrlBase (object):
         "application/pdf": "pdf",
         "application/x-pdf": "pdf",
     }
+
+    local_check_count = 1
 
     # Read in 16kb chunks
     ReadChunkBytes = 1024*16
@@ -458,15 +464,21 @@ class UrlBase (object):
             self.set_content_type()
             self.add_size_info()
             self.aggregate.plugin_manager.run_connection_plugins(self)
+            self.local_check_count = 1
         except tuple(ExcList) as exc:
-            value = self.handle_exception()
-            # make nicer error msg for unknown hosts
-            if isinstance(exc, socket.error) and exc.args[0] == -2:
-                value = _('Hostname not found')
-            elif isinstance(exc, UnicodeError):
-                # idna.encode(host) failed
-                value = _('Bad hostname %(host)r: %(msg)s') % {'host': self.host, 'msg': str(value)}
-            self.set_result(unicode_safe(value), valid=False)
+            if isinstance(exc, BadStatusLine) and self.local_check_count == 1:
+            # retry BadStatusLine errors, but only once
+                self.local_check_count = 2
+                self.local_check()
+            else:
+                value = self.handle_exception()
+                # make nicer error msg for unknown hosts
+                if isinstance(exc, socket.error) and exc.args[0] == -2:
+                    value = _('Hostname not found')
+                elif isinstance(exc, UnicodeError):
+                    # idna.encode(host) failed
+                    value = _('Bad hostname %(host)r: %(msg)s') % {'host': self.host, 'msg': str(value)}
+                self.set_result(unicode_safe(value), valid=False)
 
     def check_content(self):
         """Check content of URL.

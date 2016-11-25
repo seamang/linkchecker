@@ -174,8 +174,7 @@ class Configuration (dict):
         self["maxrequestspersecond"] = 10
         self["maxhttpredirects"] = 10
         self["nntpserver"] = os.environ.get("NNTP_SERVER", None)
-        #self["proxy"] = urllib.getproxies()
-        self["proxy"] = {}
+        self["proxy"] = urllib.getproxies()
         self["sslverify"] = True
         self["threads"] = 10
         self["timeout"] = 60
