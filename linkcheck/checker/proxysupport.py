@@ -38,7 +38,7 @@ class ProxySupport (object):
         self.proxy = proxy
         self.proxytype = "http"
         self.proxyauth = None
-        if (not self.proxy) or self.aggregate.config["noproxy"]:
+        if (not self.proxy) or self.aggregate.config["disableproxy"]:
             self.proxy = None
             return
         proxyurl = urlparse.urlparse(self.proxy)
