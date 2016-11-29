@@ -201,7 +201,7 @@ class Configuration (dict):
         self['quiet'] = False
         self["verbose"] = False
         self["warnings"] = True
-        self["noproxy"] = False
+        self["disableproxy"] = False
         self["fileoutput"] = []
         self['output'] = 'text'
         self["status"] = False
@@ -335,7 +335,7 @@ class Configuration (dict):
         support."""
         if os.name != 'posix':
             return
-        if self["noproxy"]:
+        if self["disableproxy"]:
             return
         if "http" not in self["proxy"]:
             http_proxy = get_gconf_http_proxy() or get_kde_http_proxy()
