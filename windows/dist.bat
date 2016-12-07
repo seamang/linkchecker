@@ -16,7 +16,7 @@
 @echo off
 set PYDIR=C:\Python27
 set UPX_EXE="C:\Software\upx308w\upx.exe"
-set SZ_EXE="C:\Programme\7-Zip\7z.exe"
+set SZ_EXE="C:\Programme Files\7-Zip\7z.exe"
 for /f "usebackq tokens=*" %%a in (`%PYDIR%\python.exe setup.py --version`) do set VERSION="%%a"
 set PORTDIR=LinkChecker-%VERSION%
 
